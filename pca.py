@@ -139,7 +139,7 @@ b_arr_c = pca_b.inverse_transform(blue_c)
 g_arr_c = pca_g.inverse_transform(green_c)
 r_arr_c = pca_r.inverse_transform(red_c)
 
-img_reconstruct = (cv2.merge((b_arr, g_arr, r_arr)))
+img_reconstruct = (cv2.merge((b_arr_c, g_arr_c, r_arr_c)))
 fig = plt.figure(figsize=(10, 7.2))
 fig.add_subplot(121)
 plt.title("Original Image")
