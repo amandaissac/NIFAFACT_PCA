@@ -151,5 +151,9 @@ plt.show()
 
 cv2.imwrite("Data/stereo_37_L_reconstructed.jpg", img_reconstruct) #the reconstructed image that has all three channels
 
+print(img.nbytes)
+print(img_reconstruct.nbytes) # x8 the original amount because it's stored in floats (0.0-1.0) not ints (0-255)
+print(img_reduced_priorInverse.nbytes) # 6.4x decrease (unsure about size on disk)
+
 # closing all open windows
 cv2.destroyAllWindows()
