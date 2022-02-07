@@ -8,6 +8,7 @@ from PIL import Image
 import os
 from scipy.stats import stats
 import matplotlib.image as mpimg
+from matplotlib.image import imread
 
 img = cv2.cvtColor(cv2.imread('Data/stereo_37_L.jpg'), cv2.COLOR_BGR2RGB)
 plt.imshow(img)
@@ -98,17 +99,14 @@ plt.bar(list(range(1, 201)), pca_r.explained_variance_ratio_)
 plt.show()
 
 #reconstruct image and visualize by inversing
-cv2.imwrite("Data/stereo_37_L_b.jpg", trans_pca_b * 255) #seeing blue channel image before compression
 b_arr = pca_b.inverse_transform(trans_pca_b)
-cv2.imwrite("Data/stereo_37_L_b_after.jpg", b_arr * 255) #seeing blue channel image after compression
-
 g_arr = pca_g.inverse_transform(trans_pca_g)
 r_arr = pca_r.inverse_transform(trans_pca_r)
 print(b_arr.shape, g_arr.shape, r_arr.shape)
 
 #merge all the channels into 1
 img_reduced = (cv2.merge((b_arr, g_arr, r_arr)))
-img_reduced_priorInverse = (cv2.merge((trans_pca_b, trans_pca_g, trans_pca_r))) #merging the one before inverse
+img_reduced_priorInverse = (cv2.merge((trans_pca_b, trans_pca_g, trans_pca_r))) #merging image before inverse
 print(img_reduced.shape)
 
 fig = plt.figure(figsize=(10, 7.2))
@@ -128,17 +126,30 @@ buf = io.BytesIO()
 im_resize.save(buf, format='JPEG')
 byte_im = buf.getvalue()
 
-#img_reduced = (img_reduced * 255)
 img_reduced_priorInverse = (img_reduced_priorInverse * 255)
 cv2.imwrite("Data/stereo_37_L_compressed.jpg", img_reduced_priorInverse) #the compressed image that has all three channels
-
-#trying to inverse it to decompress the original image
-#img_reduced_priorInverse = (img_reduced_priorInverse)
-#decompressed_image = pca_r.inverse_transform(img_reduced_priorInverse)
-#cv2.imwrite("Data/stereo_37_L_decompressed.jpg", img_reduced_priorInverse * 255)
-
 cv2.waitKey(0)
-
 # closing all open windows
 cv2.destroyAllWindows()
 
+#using reduced saved image, inverse it to decompress the original image
+img_reduced_priorInverse = imread('Data/stereo_37_L_compressed.jpg')
+blue_c,green_c,red_c = cv2.split(img_reduced_priorInverse)
+b_arr_c = pca_b.inverse_transform(blue_c)
+g_arr_c = pca_g.inverse_transform(green_c)
+r_arr_c = pca_r.inverse_transform(red_c)
+
+img_reconstruct = (cv2.merge((b_arr, g_arr, r_arr)))
+fig = plt.figure(figsize=(10, 7.2))
+fig.add_subplot(121)
+plt.title("Original Image")
+plt.imshow(img)
+fig.add_subplot(122)
+plt.title("Reconstructed Image")
+plt.imshow(img_reconstruct)
+plt.show()
+
+cv2.imwrite("Data/stereo_37_L_reconstructed.jpg", img_reconstruct) #the reconstructed image that has all three channels
+
+# closing all open windows
+cv2.destroyAllWindows()
