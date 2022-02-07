@@ -37,6 +37,29 @@ df_blue = blue/255
 df_green = green/255
 df_red = red/255
 
+#visualize all principal components
+pca_b_orig = PCA(n_components=720)
+pca_b_orig.fit(df_blue)
+pca_g_orig = PCA(n_components=720)
+pca_g_orig.fit(df_green)
+pca_r_orig = PCA(n_components=720)
+pca_r_orig.fit(df_red)
+
+#plot explained variance
+plt.grid()
+plt.plot(np.cumsum(pca_b_orig.explained_variance_ratio_ * 100))
+plt.xlabel('Number of components')
+plt.ylabel('Explained variance Blue')
+plt.grid()
+plt.plot(np.cumsum(pca_g_orig.explained_variance_ratio_ * 100))
+plt.xlabel('Number of components')
+plt.ylabel('Explained variance Green')
+plt.grid()
+plt.plot(np.cumsum(pca_r_orig.explained_variance_ratio_ * 100))
+plt.xlabel('Number of components')
+plt.ylabel('Explained variance Red')
+
+# reduce the components
 pca_b = PCA(n_components=200)
 pca_b.fit(df_blue)
 trans_pca_b = pca_b.transform(df_blue)
